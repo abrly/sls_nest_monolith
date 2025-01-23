@@ -1,0 +1,123 @@
+{
+  "T:\\NestProjects\\theodosls": {
+    "versionSfCore": null,
+    "versionFramework": "4.4.19",
+    "isWithinCompose": false,
+    "isCompose": false,
+    "composeOrgName": null,
+    "composeServiceName": null,
+    "servicePath": "T:\\NestProjects\\theodosls",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "theodosls",
+      "plugins": [
+        "serverless-jetpack",
+        "serverless-dynamodb",
+        "serverless-offline"
+      ],
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "us-east-1",
+        "memorySize": 2048,
+        "timeout": 20,
+        "stage": "dev",
+        "environment": {
+          "MY_ENV_VAR": "MY VALUE",
+          "USERS_TABLE_NAME": "${self:custom.usersTable.name}",
+          "DYNAMODB_ENDPOINT": "${self:custom.endpoints.dynamodbURL}"
+        },
+        "iamRoleStatements": "${file(iam/usersTableIAM.yml)}"
+      },
+      "functions": {
+        "main": {
+          "handler": "dist/lambda.handler",
+          "description": "Nestjs backend",
+          "events": [
+            {
+              "http": {
+                "method": "any",
+                "path": "/{any+}"
+              }
+            }
+          ]
+        }
+      },
+      "resources": {
+        "Resources": {
+          "usersTable": "${file(resources/usersTable.yml):usersTable}"
+        }
+      },
+      "custom": {
+        "usersTable": {
+          "name": "dev-users",
+          "arn": {
+            "Fn::GetAtt": [
+              "usersTable",
+              "Arn"
+            ]
+          }
+        },
+        "serverless-dynamodb": {
+          "start": {
+            "port": 8000,
+            "docker": false
+          }
+        }
+      }
+    },
+    "serviceRawFile": "service: theodosls\r\n\r\nplugins:\r\n  - serverless-jetpack\r\n  - serverless-dynamodb\r\n  - serverless-offline\r\n \r\n  \r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: us-east-1\r\n  memorySize: 2048\r\n  timeout: 20\r\n  stage: \"dev\" #prefix \"dev\" if undefined\r\n  environment:\r\n    MY_ENV_VAR: 'MY VALUE'\r\n    USERS_TABLE_NAME: ${self:custom.usersTable.name}\r\n    DYNAMODB_ENDPOINT: ${self:custom.endpoints.dynamodbURL}\r\n\r\n  iamRoleStatements: ${file(iam/usersTableIAM.yml)}\r\n\r\n\r\n\r\nfunctions:\r\n  main: # The name of the lambda function\r\n    # The module 'handler' is exported in the file 'src/lambda'\r\n    handler: dist/lambda.handler\r\n    description: Nestjs backend\r\n    events:\r\n      - http:\r\n         method: any\r\n         path: /{any+}\r\n\r\n         \r\n\r\nresources:\r\n  Resources:\r\n    usersTable: ${file(resources/usersTable.yml):usersTable}\r\n\r\n\r\n\r\n        \r\n\r\n\r\ncustom:\r\n  usersTable:\r\n    name: ${self:provider.stage}-users\r\n    arn: !GetAtt usersTable.Arn\r\n\r\n  serverless-dynamodb:\r\n    start:\r\n      port: 8000\r\n      docker: false",
+    "command": [
+      "offline",
+      "start"
+    ],
+    "options": {},
+    "error": {
+      "message": "Cannot resolve '${self:custom.endpoints.dynamodbURL}' variable at 'provider.environment.DYNAMODB_ENDPOINT'. No value is available for this variable, and no default value was provided. Please check your variable definitions or provide a default value.",
+      "stack": "Error: Cannot resolve '${self:custom.endpoints.dynamodbURL}' variable at 'provider.environment.DYNAMODB_ENDPOINT'. No value is available for this variable, and no default value was provided. Please check your variable definitions or provide a default value.\n    at _ResolverManager.resolve (file:///C:/Users/dgw1233/.serverless/releases/4.4.19/package/dist/sf-core.js:693:57587)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async #handlePlaceholderNode (file:///C:/Users/dgw1233/.serverless/releases/4.4.19/package/dist/sf-core.js:693:55959)\n    at async file:///C:/Users/dgw1233/.serverless/releases/4.4.19/package/dist/sf-core.js:693:53887\n    at async processNodeAndHandleCompletion (file:///C:/Users/dgw1233/.serverless/releases/4.4.19/package/dist/sf-core.js:693:44836)",
+      "code": "MISSING_VARIABLE_RESULT"
+    },
+    "machineId": "b80a860cdaaa1348c52d98908bdb7a4d",
+    "stage": "dev",
+    "accessKeyV2": "<REDACTED>",
+    "accessKeyV1": "<REDACTED>",
+    "orgId": "b6163d02-b4dd-41fd-aa3b-89a55a51ab8c",
+    "orgName": "w3cloudstudio",
+    "userId": "6JKDkRj9NWH22McKvZ",
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "userName": "akbarlocate",
+    "subscription": null,
+    "userEmail": "abrly@yahoo.com",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:us-east-1:017820701340:stack/theodosls-dev/05090590-d8f1-11ef-a3db-0affe54b4b4f",
+    "serviceProviderAwsCfStackCreated": "2025-01-22T18:45:15.610Z",
+    "serviceProviderAwsCfStackUpdated": "2025-01-23T05:26:52.694Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "MainLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:us-east-1:017820701340:function:theodosls-dev-main:2",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-theodosls-dev-MainLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServiceEndpoint",
+        "OutputValue": "https://33khtdjkgj.execute-api.us-east-1.amazonaws.com/dev",
+        "Description": "URL of the service endpoint",
+        "ExportName": "sls-theodosls-dev-ServiceEndpoint"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-us-east-1-66857e9c-4c3f",
+        "ExportName": "sls-theodosls-dev-ServerlessDeploymentBucketName"
+      }
+    ]
+  }
+}
