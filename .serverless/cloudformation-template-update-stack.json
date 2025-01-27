@@ -5,7 +5,7 @@
     "MainLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/theodosls-dev-main"
+        "LogGroupName": "/aws/lambda/nestmonolith-dev-main"
       }
     },
     "IamRoleLambdaExecution": {
@@ -33,7 +33,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "theodosls",
+                  "nestmonolith",
                   "dev",
                   "lambda"
                 ]
@@ -51,7 +51,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/theodosls-dev*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/nestmonolith-dev*:*"
                     }
                   ]
                 },
@@ -62,7 +62,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/theodosls-dev*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/nestmonolith-dev*:*:*"
                     }
                   ]
                 },
@@ -94,7 +94,7 @@
           "Fn::Join": [
             "-",
             [
-              "theodosls",
+              "nestmonolith",
               "dev",
               {
                 "Ref": "AWS::Region"
@@ -110,18 +110,19 @@
       "Properties": {
         "Code": {
           "S3Bucket": "serverless-framework-deployments-us-east-1-66857e9c-4c3f",
-          "S3Key": "serverless/theodosls/dev/1737610032724-2025-01-23T05:27:12.724Z/theodosls.zip"
+          "S3Key": "serverless/nestmonolith/dev/1737892560629-2025-01-26T11:56:00.629Z/nestmonolith.zip"
         },
         "Handler": "dist/lambda.handler",
         "Runtime": "nodejs20.x",
-        "FunctionName": "theodosls-dev-main",
+        "FunctionName": "nestmonolith-dev-main",
         "MemorySize": 2048,
-        "Timeout": 20,
+        "Timeout": 30,
         "Description": "Nestjs backend",
         "Environment": {
           "Variables": {
-            "MY_ENV_VAR": "MY VALUE",
-            "USERS_TABLE_NAME": "dev-users"
+            "APP_AWS_REGION": "us-east-1",
+            "USERS_TABLE_NAME": "dev-users",
+            "APP_FILESTORE_S3_BKT": "dev-filebkt"
           }
         },
         "Role": {
@@ -135,21 +136,21 @@
         "MainLogGroup"
       ]
     },
-    "MainLambdaVersion6LYWQXkY4icVEq4XiydCe6Htj8HuCxYcWfMw6vZk": {
+    "MainLambdaVersionAb3XWJwTOetq9cAq6Vud1S85CaB6U6VGwQZz7uooMw": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "MainLambdaFunction"
         },
-        "CodeSha256": "c2YQjy+Q/06imCJxH5Bf3+TWAkqox1sVILbzxa/NHvg=",
+        "CodeSha256": "jC/iptzc39S1+nBW7WWWXpZzRCQHjgLMna4RvS9vzIY=",
         "Description": "Nestjs backend"
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "dev-theodosls",
+        "Name": "dev-nestmonolith",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -219,7 +220,7 @@
         "MainLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1737610011231": {
+    "ApiGatewayDeployment1737892462211": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -230,6 +231,30 @@
       "DependsOn": [
         "ApiGatewayMethodAnyVarAny"
       ]
+    },
+    "ApiGatewayUsagePlan": {
+      "Type": "AWS::ApiGateway::UsagePlan",
+      "DependsOn": "ApiGatewayDeployment1737892462211",
+      "Properties": {
+        "ApiStages": [
+          {
+            "ApiId": {
+              "Ref": "ApiGatewayRestApi"
+            },
+            "Stage": "dev"
+          }
+        ],
+        "Description": "Usage plan for nestmonolith dev stage",
+        "UsagePlanName": "nestmonolith-dev",
+        "Quota": {
+          "Limit": 3,
+          "Period": "DAY"
+        },
+        "Throttle": {
+          "BurstLimit": 2,
+          "RateLimit": 3
+        }
+      }
     },
     "MainLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
@@ -286,22 +311,28 @@
         ],
         "BillingMode": "PAY_PER_REQUEST"
       }
+    },
+    "appFileStorageBucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "dev-filebkt"
+      }
     }
   },
   "Outputs": {
     "ServerlessDeploymentBucketName": {
       "Value": "serverless-framework-deployments-us-east-1-66857e9c-4c3f",
       "Export": {
-        "Name": "sls-theodosls-dev-ServerlessDeploymentBucketName"
+        "Name": "sls-nestmonolith-dev-ServerlessDeploymentBucketName"
       }
     },
     "MainLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "MainLambdaVersion6LYWQXkY4icVEq4XiydCe6Htj8HuCxYcWfMw6vZk"
+        "Ref": "MainLambdaVersionAb3XWJwTOetq9cAq6Vud1S85CaB6U6VGwQZz7uooMw"
       },
       "Export": {
-        "Name": "sls-theodosls-dev-MainLambdaFunctionQualifiedArn"
+        "Name": "sls-nestmonolith-dev-MainLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -327,7 +358,7 @@
         ]
       },
       "Export": {
-        "Name": "sls-theodosls-dev-ServiceEndpoint"
+        "Name": "sls-nestmonolith-dev-ServiceEndpoint"
       }
     }
   }

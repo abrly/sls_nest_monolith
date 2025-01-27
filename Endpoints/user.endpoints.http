@@ -1,0 +1,11 @@
+POST http://localhost:3000/dev/user
+Content-Type:application/json
+{
+    "name":"Joha",
+    "remarks":"blah blddah2"
+}
+
+
+
+GET http://localhost:3000/dev/user/a074be1f-a44e-4b56-867e-2250ad201be5
+

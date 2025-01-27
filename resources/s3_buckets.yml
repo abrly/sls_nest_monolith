@@ -1,0 +1,7 @@
+Resources:
+
+  appFileStorageBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.appFileStorageBucket.name}
+      

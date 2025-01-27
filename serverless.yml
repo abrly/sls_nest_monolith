@@ -8,14 +8,24 @@ provider:
   name: aws
   runtime: nodejs20.x
   region: us-east-1
+  apiGateway:    
+    usagePlan:
+      quota:
+        limit: 3          # Total number of requests allowed
+        period: DAY          # Reset period (e.g., DAY, WEEK, MONTH)
+      throttle:
+        rateLimit: 3        # Requests per second
+        burstLimit: 2        # Additional capacity for bursts
   memorySize: 2048
-  timeout: 20
+  timeout: 30
   stage: "dev" #prefix "dev" if undefined
   environment:
-    MY_ENV_VAR: 'MY VALUE'
+    APP_AWS_REGION: ${self:provider.region}   
     USERS_TABLE_NAME: ${self:custom.usersTable.name}
-    
-  iamRoleStatements: ${file(iam/usersTableIAM.yml)}
+    APP_FILESTORE_S3_BKT: ${self:custom.appFileStorageBucket.name}
+
+  iamRoleStatements: 
+    ${file(resources/iam/usersTableIAM.yml)}
 
 
 
@@ -28,20 +38,21 @@ functions:
       - http:
          method: any
          path: /{any+}
-
+        
          
 
 resources:
-  Resources:
-    usersTable: ${file(resources/usersTable.yml):usersTable}
-
-
-
-        
+  - ${file(resources/dynamo_tables.yml)}
+  - ${file(resources/s3_buckets.yml)}
+       
 
 
 custom:
   usersTable:
     name: ${self:provider.stage}-users
     arn: !GetAtt usersTable.Arn
+
+  appFileStorageBucket:
+    name: ${self:provider.stage}-filebkt
+    arn: !GetAtt appFileStorageBucket.Arn
 
